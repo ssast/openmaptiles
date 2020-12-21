@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# For backward compatibility, allow both PG* and POSTGRES_* forms,
+# with the non-standard POSTGRES_* form taking precedence.
+# An error will be raised if neither form is given, except for the PGPORT
+export PGHOST="${POSTGRES_HOST:-${PGHOST?}}"
+export PGDATABASE="${POSTGRES_DB:-${PGDATABASE?}}"
+export PGUSER="${POSTGRES_USER:-${PGUSER?}}"
+export PGPASSWORD="${POSTGRES_PASSWORD:-${PGPASSWORD?}}"
+export PGPORT="${POSTGRES_PORT:-${PGPORT:-5432}}"
+
+psql -c "DROP TABLE IF EXISTS temp; CREATE TABLE temp (osm_id bigint, admin_level int, dividing_line bool, disputed bool, maritime bool, geometry Geometry(MultiLineString, 3857));"
+psql -c "INSERT INTO temp (osm_id, admin_level, dividing_line, disputed, maritime, geometry)
+        SELECT osm_id, admin_level, dividing_line, disputed, maritime, ST_Multi(ST_CollectionExtract(ST_Intersection(geometry, ST_Transform(ST_MakeEnvelope($BBOX,4326), 3857)), 2))
+        FROM $BORDERS_TABLE_NAME;"
+psql -c "DELETE FROM temp WHERE geometry IS NULL;"
+psql -c "DROP TABLE IF EXISTS $BORDERS_TABLE_NAME CASCADE; CREATE TABLE $BORDERS_TABLE_NAME (osm_id bigint, admin_level int, dividing_line bool, disputed bool, maritime bool, geometry Geometry(MultiLineString, 3857));"
+psql -c "INSERT INTO $BORDERS_TABLE_NAME (osm_id, admin_level, dividing_line, disputed, maritime, geometry)
+        SELECT * FROM temp;"
+psql -c "DROP TABLE temp;"

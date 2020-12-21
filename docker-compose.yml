@@ -40,6 +40,7 @@ services:
       MAX_ZOOM: ${MAX_ZOOM}
       #Provide BBOX from *.bbox file if exists, else from .env
       BBOX: ${BBOX}
+      DATA_DIR: ${DATA_DIR}
       # Imposm configuration file describes how to load updates when enabled
       IMPOSM_CONFIG_FILE: ${IMPOSM_CONFIG_FILE}
       # Which files to use during import-borders processing
@@ -48,20 +49,23 @@ services:
       BORDERS_CSV_FILE: ${BORDERS_CSV_FILE}
       # Control import-sql processes
       MAX_PARALLEL_PSQL: ${MAX_PARALLEL_PSQL}
+      BBOX_FILE: ${BBOX_FILE}
     networks:
       - postgres_conn
     volumes:
       - .:/tileset
-      - ./data:/import
+      - ${DATA_DIR}:/import
       - ./build/sql:/sql
       - ./build:/mapping
       - ./cache:/cache
+      - ./import-osm:/usr/src/app/import-osm
+      - ./clip-borders:/usr/src/app/clip-borders
 
   generate-changed-vectortiles:
     image: "openmaptiles/generate-vectortiles:${TOOLS_VERSION}"
     command: ./export-list.sh
     volumes:
-      - ./data:/export
+      - ${DATA_DIR}:/export
       - ./build/openmaptiles.tm2source:/tm2source
     networks:
       - postgres_conn
@@ -75,7 +79,7 @@ services:
   generate-vectortiles:
     image: "openmaptiles/generate-vectortiles:${TOOLS_VERSION}"
     volumes:
-      - ./data:/export
+      - ${DATA_DIR}:/export
       - ./build/openmaptiles.tm2source:/tm2source
     networks:
       - postgres_conn
