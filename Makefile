@@ -349,11 +349,11 @@ endif
 .PHONY: generate-bbox-file
 generate-bbox-file:
 	@$(assert_area_is_given)
-ifeq (,$(wildcard $(AREA_BBOX_FILE1)))
+# ifeq (,$(wildcard $(AREA_BBOX_FILE1)))
 	@$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools download-osm bbox "$(PBF_FILE)" "$(AREA_BBOX_FILE)"
-else
-	@echo "Configuration file $(AREA_BBOX_FILE) already exists, no need to regenerate."
-endif
+# else
+# 	@echo "Configuration file $(AREA_BBOX_FILE) already exists, no need to regenerate."
+# endif
 
 .PHONY: psql
 psql: start-db-nowait

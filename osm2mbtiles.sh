@@ -12,52 +12,65 @@ then
 fi
 
 export area="${area}"
-export BBOX="${bbox}"
-export BBOX_FILE="/import/${area}.geojson"
 export DATA_DIR="${data_dir}"
 export MIN_ZOOM="${min_zoom}"
 export MAX_ZOOM="${max_zoom}"
 
-echo "$BBOX" > "${data_dir}/${area}.bbox"
+if [ "$bbox" != "" ]
+then
+  echo "$bbox" > "${data_dir}/${area}.bbox"
 
-# Split bbox into coords
-IFS=',' read -r -a coords <<< "$BBOX"
+  # Split bbox into coords
+  IFS=',' read -r -a coords <<< "$bbox"
 
-echo '
-{
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            ['${coords[0]}', '${coords[1]}'],
-            ['${coords[2]}', '${coords[1]}'],
-            ['${coords[2]}', '${coords[3]}'],
-            ['${coords[0]}', '${coords[3]}'],
-            ['${coords[0]}', '${coords[1]}']
+  echo '
+  {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              ['${coords[0]}', '${coords[1]}'],
+              ['${coords[2]}', '${coords[1]}'],
+              ['${coords[2]}', '${coords[3]}'],
+              ['${coords[0]}', '${coords[3]}'],
+              ['${coords[0]}', '${coords[1]}']
+            ]
           ]
-        ]
-      },
-      "properties": {
+        },
+        "properties": {
+        }
       }
-    }
-  ]
-}' > "${data_dir}/${area}.geojson"
+    ]
+  }' > "${data_dir}/${area}.geojson"
+  export BBOX_FILE="/import/${area}.geojson"
+  export BBOX="${bbox}"
+else
+  make generate-bbox-file
+  export BBOX=$(<"${data_dir}/${area}.bbox")
+  export BBOX_FILE=""
+fi
 
 make import-osm
 
 make import-borders
 
-make clip-borders
+if [ "$bbox" != "" ]
+then
+  make clip-borders
+fi
 
 make import-wikidata
 
 make import-sql
 
 # make generate-tiles
+
+export MIN_ZOOM="${min_zoom}"
+export MAX_ZOOM="${max_zoom}"
 
 export MBTILES_FILE="${area}.mbtiles"
 MBTILES_LOCAL_FILE="/import/${MBTILES_FILE}"
