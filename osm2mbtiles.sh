@@ -5,6 +5,7 @@ data_dir=$3
 download=$4
 min_zoom=$5
 max_zoom=$6
+tiles_only=$7
 
 if [ "$download" = true ]
 then
@@ -54,19 +55,22 @@ else
   export BBOX_FILE=""
 fi
 
-make import-osm
-
-make import-borders
-
-if [ "$bbox" != "" ]
+if [ "$tiles_only" != true ]
 then
-  echo $bbox
-  make clip-borders
+  make import-osm
+
+  make import-borders
+
+  if [ "$bbox" != "" ]
+  then
+    echo $bbox
+    make clip-borders
+  fi
+
+  make import-wikidata
+
+  make import-sql
 fi
-
-make import-wikidata
-
-make import-sql
 
 # make generate-tiles
 
