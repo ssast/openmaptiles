@@ -60,6 +60,7 @@ make import-borders
 
 if [ "$bbox" != "" ]
 then
+  echo $bbox
   make clip-borders
 fi
 
@@ -74,7 +75,7 @@ export MAX_ZOOM="${max_zoom}"
 
 export MBTILES_FILE="${area}.mbtiles"
 MBTILES_LOCAL_FILE="/import/${MBTILES_FILE}"
-docker-compose run --rm -u 1000:1000 generate-vectortiles
+docker-compose run --rm -u $(id -u):$(id -g) generate-vectortiles
 
-docker-compose run --rm -u 1000:1000 openmaptiles-tools \
+docker-compose run --rm -u $(id -u):$(id -g) openmaptiles-tools \
       mbtiles-tools meta-generate "${MBTILES_LOCAL_FILE}" "openmaptiles.yaml" --auto-minmax --show-ranges
