@@ -3,6 +3,7 @@ git clone https://github.com/ssast/openmaptiles.git
 cd openmaptiles
 
 export DATA_DIR=~/data
+
 export BBOX_FILE=""
 
 make
