@@ -1,3 +1,78 @@
+# 1. First time setup steps from: https://github.com/openmaptiles/openmaptiles, pulls images and creates base db.
+git clone https://github.com/ssast/openmaptiles.git
+cd openmaptiles
+
+export DATA_DIR=~/data
+export BBOX_FILE=""
+
+make
+
+make start-db
+
+make import-data
+
+
+# 2. Set script parameters.
+
+# Location of repo.
+script_dir=~/openmaptiles
+
+# Location to save OSM and mbtiles to (should already exist with user permissions).
+data_dir=~/data
+
+# Geofabrik OSM region name from geofabrik, use "planet" for the entire world. To see options, run docker-compose run --rm openmaptiles-tools download-osm list geofabrik
+area=europe/germany
+
+# Download file, false to skip and use existing file.
+download=false
+
+# BBox to filter to as (min_lng, min_lat, max_lng, max_lat). Set to "" to not clip to a bbox.
+bbox="13.3680397815609,52.50772717466427,13.390913660205602,52.52180393067408"
+
+# Zoom levels of exported tiles.
+max_zoom=0
+min_zoom=14
+
+# Export mbtiles only e.g.to re-run from error or to change zoom levels/bbox.
+tiles_only=false
+
+
+# 3. Run data download & ETL script.
+cd "${script_dir}"
+. ./osm2mbtiles.sh "${area}" "${bbox}" "${data_dir}" "${download}" "${max_zoom}" "${min_zoom}" "${tiles_only}"
+
+# Example of running tileserver to review mb tiles results.
+docker run --rm -it -v "${data_dir}/europe":/data -p 8080:80 klokantech/tileserver-gl
+
+
+# Occasionally the tile export container raises errors like below, seemingly at random - just run the script again if so (setting download to false). If failing on the mbtiles export, set tiles_only to true.
+
+Filtering deprecation warnings from the Mapnik's output.
+/usr/local/lib/node_modules/tilelive/lib/stream-pyramid.js:86
+            x: stream.bboxes[stream.minzoom].minX,
+                                            ^
+
+TypeError: Cannot read property 'minX' of undefined
+    at Immediate.<anonymous> (/usr/local/lib/node_modules/tilelive/lib/stream-pyramid.js:86:45)
+    at Immediate.immediate._onImmediate (timers.js:577:18)
+    at tryOnImmediate (timers.js:534:15)
+    at processImmediate [as _immediateCallback] (timers.js:514:5)
+Connecting to PostgreSQL at postgres:5432, db=openmaptiles, user=openmaptiles...
+
+
+sqlite3.OperationalError: no such table: map
+
+
+... gave up waiting for Postgres:   PGHOST=postgres PGDATABASE=openmaptiles PGUSER=openmaptiles PGPORT=5432 pg_isready
+
+
+
+
+
+### Original open map tiles readme below:
+
+
+
 ## OpenMapTiles [![Build Status](https://github.com/openmaptiles/openmaptiles/workflows/OMT_CI/badge.svg?branch=master)](https://github.com/openmaptiles/openmaptiles/actions)
 
 OpenMapTiles is an extensible and open tile schema based on the OpenStreetMap. This project is used to generate vector tiles for online zoomable maps. OpenMapTiles is about creating a beautiful basemaps with general layers containing topographic information. More information [openmaptiles.org](https://openmaptiles.org/) and [maptiler.com/data/](https://www.maptiler.com/data/).
