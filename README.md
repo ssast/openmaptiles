@@ -1,4 +1,4 @@
-# 1. First time setup steps from: https://github.com/openmaptiles/openmaptiles, pulls images and creates base db.
+### 1. First time setup steps from: https://github.com/openmaptiles/openmaptiles, pulls images and creates base db.
 git clone https://github.com/ssast/openmaptiles.git
 cd openmaptiles
 
@@ -12,40 +12,40 @@ make start-db
 make import-data
 
 
-# 2. Set script parameters.
+### 2. Set script parameters.
 
-# Location of repo.
+#### Location of repo.
 script_dir=~/openmaptiles
 
-# Location to save OSM and mbtiles to (should already exist with user permissions).
+#### Location to save OSM and mbtiles to (should already exist with user permissions).
 data_dir=~/data
 
-# Geofabrik OSM region name from geofabrik, use "planet" for the entire world. To see options, run docker-compose run --rm openmaptiles-tools download-osm list geofabrik
+#### Geofabrik OSM region name from geofabrik, use "planet" for the entire world. To see options, run docker-compose run --rm openmaptiles-tools download-osm list geofabrik
 area=europe/germany
 
-# Download file, false to skip and use existing file.
+#### Download file, false to skip and use existing file.
 download=false
 
-# BBox to filter to as (min_lng, min_lat, max_lng, max_lat). Set to "" to not clip to a bbox.
+#### BBox to filter to as (min_lng, min_lat, max_lng, max_lat). Set to "" to not clip to a bbox.
 bbox="13.3680397815609,52.50772717466427,13.390913660205602,52.52180393067408"
 
-# Zoom levels of exported tiles.
+#### Zoom levels of exported tiles.
 max_zoom=0
 min_zoom=14
 
-# Export mbtiles only e.g.to re-run from error or to change zoom levels/bbox.
+#### Export mbtiles only e.g.to re-run from error or to change zoom levels/bbox.
 tiles_only=false
 
 
-# 3. Run data download & ETL script.
+### 3. Run data download & ETL script.
 cd "${script_dir}"
 . ./osm2mbtiles.sh "${area}" "${bbox}" "${data_dir}" "${download}" "${max_zoom}" "${min_zoom}" "${tiles_only}"
 
-# Example of running tileserver to review mb tiles results.
+#### Example of running tileserver to review mb tiles results.
 docker run --rm -it -v "${data_dir}/europe":/data -p 8080:80 klokantech/tileserver-gl
 
 
-# Occasionally the tile export container raises errors like below, seemingly at random - just run the script again if so (setting download to false). If failing on the mbtiles export, set tiles_only to true.
+#### Occasionally the tile export container raises errors like below, seemingly at random - just run the script again if so (setting download to false). If failing on the mbtiles export, set tiles_only to true.
 
 Filtering deprecation warnings from the Mapnik's output.
 /usr/local/lib/node_modules/tilelive/lib/stream-pyramid.js:86
@@ -69,7 +69,7 @@ sqlite3.OperationalError: no such table: map
 
 
 
-### Original open map tiles readme below:
+## Original open map tiles readme below:
 
 
 
