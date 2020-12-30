@@ -31,8 +31,8 @@ download=false
 bbox="13.3680397815609,52.50772717466427,13.390913660205602,52.52180393067408"
 
 #### Zoom levels of exported tiles.
-max_zoom=0
-min_zoom=14
+max_zoom=14
+min_zoom=0
 
 #### Export mbtiles only e.g.to re-run from error or to change zoom levels/bbox.
 tiles_only=false
