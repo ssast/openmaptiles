@@ -2,8 +2,8 @@
 script_dir=~/openmaptiles
 data_dir=~/data
 area=europe/germany
-download=false
+download=true
 bbox="13.3680397815609,52.50772717466427,13.390913660205602,52.52180393067408"
-max_zoom=0
-min_zoom=14
+max_zoom=14
+min_zoom=0
 tiles_only=false
