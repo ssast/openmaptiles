@@ -68,8 +68,6 @@ fi
 
 # make generate-tiles
 
-export MIN_ZOOM="${max_zoom}"
-export MAX_ZOOM="${min_zoom}"
 export MBTILES_FILE="${area}.mbtiles"
 
 rm "${data_dir}/${MBTILES_FILE}"
