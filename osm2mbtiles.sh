@@ -1,11 +1,6 @@
 #!/bin/bash
-area=$1
-bbox=$2
-data_dir=$3
-download=$4
-min_zoom=$5
-max_zoom=$6
-tiles_only=$7
+config=$1
+source $config
 
 if [ "$download" = true ]
 then
@@ -63,7 +58,6 @@ then
 
   if [ "$bbox" != "" ]
   then
-    echo $bbox
     make clip-borders
   fi
 
@@ -74,10 +68,12 @@ fi
 
 # make generate-tiles
 
-export MIN_ZOOM="${min_zoom}"
-export MAX_ZOOM="${max_zoom}"
-
+export MIN_ZOOM="${max_zoom}"
+export MAX_ZOOM="${min_zoom}"
 export MBTILES_FILE="${area}.mbtiles"
+
+rm "${data_dir}/${MBTILES_FILE}"
+
 MBTILES_LOCAL_FILE="/import/${MBTILES_FILE}"
 docker-compose run --rm -u $(id -u):$(id -g) generate-vectortiles
 

@@ -13,7 +13,7 @@ make start-db
 make import-data
 
 
-### 2. Set script parameters.
+### 2. Set script parameters in a config file as below (see example.sh).
 
 #### Location of repo.
 script_dir=~/openmaptiles
@@ -38,9 +38,9 @@ min_zoom=14
 tiles_only=false
 
 
-### 3. Run data download & ETL script.
-cd "${script_dir}"
-. ./osm2mbtiles.sh "${area}" "${bbox}" "${data_dir}" "${download}" "${max_zoom}" "${min_zoom}" "${tiles_only}"
+### 3. Run data download & ETL script, passing config file.
+cd ~/openmaptiles
+. ./osm2mbtiles.sh ./example.sh
 
 #### Example of running tileserver to review mb tiles results.
 docker run --rm -it -v "${data_dir}/europe":/data -p 8080:80 klokantech/tileserver-gl
